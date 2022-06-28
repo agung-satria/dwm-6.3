@@ -1,4 +1,9 @@
 /* See LICENSE file for copyright and license details. */
+#define XF86MonBrightnessDown 0x1008ff03
+#define XF86MonBrightnessUp 0x1008ff02
+#define TERMINAL "st"
+#define TERMCLASS "St"
+
 
 /* appearance */
 static const unsigned int borderpx  = 2;        /* border pixel of windows */
@@ -7,8 +12,7 @@ static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows sel
 static const unsigned int systrayonleft = 0;   	/* 0: systray in the right corner, >0: systray on left of status text */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
-// static const int showsystray        = 1;     /* 0 means no systray */
-static int showsystray        = 1;     /* 0 means no systray */
+static int showsystray        = 0;     /* 0 means no systray */
 static const unsigned int gappih    = 14;       /* horiz inner gap between windows */
 static const unsigned int gappiv    = 14;       /* vert inner gap between windows */
 static const unsigned int gappoh    = 14;       /* horiz outer gap between windows and screen edge */
@@ -113,6 +117,19 @@ static const Rule rules[] = {
 	{ NULL,		  "spnmtui",   NULL,		SPTAG(4),	           1,               -1 },
 	{ NULL,		  "spranger",   NULL,		SPTAG(5),	           1,               -1 },
 
+    /* floatthings */
+    { "float-st",           NULL,       NULL,       0,            1,           -1 },
+    { "float-st-lfub",      NULL,       NULL,       0,            1,           -1 },
+    { "float-st-calcurse",  NULL,       NULL,       0,            1,           -1 },
+    { "float-st-calc",      NULL,       NULL,       0,            1,           -1 },
+    { "float-st-ncmpcpp",   NULL,       NULL,       0,            1,           -1 },
+    { "float-st-nmtui",     NULL,       NULL,       0,            0,           -1 },
+    { "float-st-bpytop",    NULL,       NULL,       0,            1,           -1 },
+    { "float-st-gotop",     NULL,       NULL,       0,            1,           -1 },
+    { "float-st-obs",       NULL,       NULL,       0,            1,           -1 },
+    { "float-st-pulsemixer",NULL,       NULL,       0,            1,           -1 },
+
+
 };
 
 /* layout(s) */
@@ -162,10 +179,43 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
 
-
+#include <X11/XF86keysym.h>
 #include "movestack.c"
 static Key keys[] = {
 	/* modifier                     key        function        argument */
+  /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^agstr^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
+	{ MODKEY,			XK_F4,		spawn,		SHCMD(TERMINAL " -c float-st-pulsemixer -g 100x25 pulsemixer") },
+
+  /* volume and brightness */
+  { 0,  XF86XK_AudioMute,           spawn, SHCMD("amixer -q -D pulse sset Master toggle") },
+  { 0,  XF86XK_AudioRaiseVolume,    spawn, SHCMD("amixer -q -D pulse sset Master 5%+") },
+  { 0,  XF86XK_AudioLowerVolume,    spawn, SHCMD("amixer -q -D pulse sset Master 5%-") },
+  { 0,  XF86MonBrightnessUp,        spawn, SHCMD("brightness-setter +5") },
+  { 0,  XF86MonBrightnessDown,      spawn, SHCMD("brightness-setter -5") },
+
+  /* mpd control */
+ 	{ MODKEY,			          XK_slash,		        	spawn,		SHCMD("mpc -p 6601 toggle") },
+	{ MODKEY,			          XK_comma,	        spawn,		SHCMD("mpc -p 6601 prev") },
+	{ MODKEY|ShiftMask,		  XK_comma,	        spawn,		SHCMD("mpc -p 6601 seek 0%") },
+	{ MODKEY,			          XK_period,	      spawn,		SHCMD("mpc -p 6601 next") },
+	{ MODKEY|ShiftMask,		  XK_period,	      spawn,		SHCMD("mpc -p 6601 repeat") },
+	{ MODKEY|ALTKEY,		    XK_period,	      spawn,		SHCMD("mpc -p 6601 random") },
+  { MODKEY,			          XK_bracketleft,		spawn,		SHCMD("mpc -p 6601 seek -5") },
+	{ MODKEY|ShiftMask,		  XK_bracketleft,		spawn,		SHCMD("mpc -p 6601 seek -30") },
+	{ MODKEY,			          XK_bracketright,	spawn,		SHCMD("mpc -p 6601 seek +5") },
+	{ MODKEY|ShiftMask,		  XK_bracketright,	spawn,		SHCMD("mpc -p 6601 seek +30") },
+
+  /* screenshots */
+	{ 0,			     	XK_Print,	spawn,		SHCMD("ss-full") },
+	{ ShiftMask,	  XK_Print,	spawn,		SHCMD("maimpick") },
+	{ ControlMask,  XK_Print,	spawn,		SHCMD("ss-cp") },
+	{ MODKEY,	      XK_v,     spawn,	  SHCMD("dmenurecord") },
+
+  // lockscreen
+	{ MODKEY|ControlMask,		XK_l,   	        spawn,	  SHCMD("slock") },
+  /*___________________________________________________agstr____________________________________________________ */
+
+
 	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
