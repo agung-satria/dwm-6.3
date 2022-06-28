@@ -277,6 +277,7 @@ static void swapfocus();
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void togglebar(const Arg *arg);
+static void togglesystray();
 static void togglefloating(const Arg *arg);
 static void togglescratch(const Arg *arg);
 static void toggletag(const Arg *arg);
@@ -1962,6 +1963,19 @@ nexttagged(Client *c) {
 		walked = walked->next
 	);
 	return walked;
+}
+
+void
+togglesystray()
+{
+    if (showsystray) {
+               showsystray = 0;
+               XUnmapWindow(dpy, systray->win);
+    } else {
+        showsystray = 1;
+    }
+    updatesystray();
+    updatestatus();
 }
 
 void
