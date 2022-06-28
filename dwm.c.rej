@@ -1,10 +1,11 @@
 --- dwm.c
 +++ dwm.c
-@@ -157,6 +157,7 @@ static void configure(Client *c);
- static void configurenotify(XEvent *e);
- static void configurerequest(XEvent *e);
- static Monitor *createmon(void);
-+static void cyclelayout(const Arg *arg);
- static void destroynotify(XEvent *e);
- static void detach(Client *c);
- static void detachstack(Client *c);
+@@ -59,7 +59,7 @@
+ 
+ /* enums */
+ enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
+-enum { SchemeNorm, SchemeSel }; /* color schemes */
++enum { SchemeNorm, SchemeSel, SchemeTitle }; /* color schemes */
+ enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
+        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
+        NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
