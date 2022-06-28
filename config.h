@@ -38,17 +38,77 @@ static const char *colors[][3]      = {
 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
 };
 
+typedef struct {
+	const char *name;
+	const void *cmd;
+} Sp;
+const char *spcmd1[] = {"st", "-n", "spterm", "-g", "100x25", NULL };
+const char *spcmd2[] = {"st", "-n", "spcalc", "-g", "50x20+660+275", "bc", "-lq", NULL };
+const char *spcmd3[] = {"st", "-n", "spncmpcpp", "-g", "100x25", "-e", "ncmpcpp", NULL };
+const char *spcmd4[] = {"st", "-n", "spcalcurse", "-g", "100x25", "-e", "calcurse", NULL };
+const char *spcmd5[] = {"st", "-n", "spnmtui", "-g", "100x25", "-e", "nmtui", NULL };
+const char *spcmd6[] = {"st", "-n", "spranger", "-g", "100x25", "-e", "ranger", NULL };
+static Sp scratchpads[] = {
+
+	/* name          cmd  */
+	{"spterm",      spcmd1},
+	{"spcalc",      spcmd2},
+	{"spncmpcpp",   spcmd3},
+	{"spcalcurse",  spcmd4},
+	{"spnmtui",     spcmd5},
+	{"spranger",    spcmd6},
+
+};
+
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-
 static const Rule rules[] = {
 	/* xprop(1):
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	/* class                  instance    title       tags mask     isfloating   monitor */
+   	{ "Gimp",	        NULL,			  NULL,		    1 << 5,	         0,		 -1 },
+   	{ "Firefox",            NULL,			  NULL,		    1 << 1,	   		   0,		   -1 },
+   	{ "Whatsapp-for-linux", NULL,			  NULL,		    1 << 7,	   		   0,		   -1 },
+   	{ "Brave-browser",      NULL,			  NULL,		    1 << 1,	    	   0,		   -1 },  
+   	{ "Inkscape",	          NULL,			  NULL,		    1 << 6,	         0,		   -1 },
+   	{ "libreoffice",	      NULL,			  NULL,		    1 << 2,	         0,		   -1 },
+   	{ "libreoffice-startcenter",NULL,	  NULL,		    1 << 2,	         0,		   -1 },
+   	{ "libreoffice-writer", NULL,			  NULL,		    1 << 2,	         0,		   -1 },
+   	{ "libreoffice-calc",		NULL,			  NULL,		    1 << 2,	         0,		   -1 },
+   	{ "libreoffice-impress",NULL,			  NULL,		    1 << 2,	         0,		   -1 },
+   	{ "libreoffice-draw",		NULL,			  NULL,		    1 << 2,	         0,		   -1 },
+   	{ "libreoffice-math",		NULL,			  NULL,		    1 << 2,	         0,		   -1 },
+   	{ "libreoffice-base",		NULL,			  NULL,		    1 << 2,	         0,		   -1 },
+    { "St",				          NULL,       NULL,       0,                0,     -1 },  
+    { "tabbed",				      NULL,       NULL,       0,                0,     -1 },  
+    { "Yad",			          NULL,       NULL,       0,                1,     -1 },  
+    { "yad",			          NULL,       NULL,       0,                1,     -1 },  
+    { "vCoolor",			      NULL,       NULL,       0,                1,     -1 },  
+    { "winbox64.exe",	      NULL,       NULL,       0,                1,     -1 },  
+  	{ "Wine",               NULL,       NULL,       0,                1,     -1 },  
+  	{ "Arandr",             NULL,       NULL,       0,                1,     -1 },  
+  	{ "ksnip",              NULL,       NULL,       0,                1,     -1 },  
+  	{ "Pavucontrol",        NULL,       NULL,       0,                1,     -1 },  
+  	{ "vokoscreen",         NULL,       NULL,       1 << 8,           1,     -1 },  
+  	{ "vokoscreenNG",       NULL,       NULL,       1 << 8,           1,     -1 },  
+  	{ "SimpleScreenRecorder",NULL,      NULL,       1 << 8,           1,     -1 },  
+  	{ "xdman-Main",         NULL,       NULL,       0,                1,     -1 },  
+  	{ "zoom",               NULL,       NULL,       1 << 7,           0,     -1 },  
+  	{ "arandr",             NULL,       NULL,       0,                1,     -1 },  
+  	{ "audacious",          NULL,       NULL,       0,                0,     -1 },  
+  	{ "Dragon",             NULL,       NULL,       0,                1,     -1 },  
+  	{ "aft-linux-qt",				NULL,				NULL,       1 << 8,	         1,      -1 }, 
+  	{ "firefox",            NULL,       NULL,       1 << 1,           0,     -1 },  
+    /* scratchpads */
+	{ NULL,		  "spterm",		NULL,		SPTAG(0),	           1,               -1 },
+	{ NULL,		  "spcalc",		NULL,		SPTAG(1),	           1,               -1 },
+	{ NULL,		  "spncmpcpp", NULL,		SPTAG(2),	           1,               -1 },
+	{ NULL,		  "spcalcurse",NULL,		SPTAG(3),	           1,               -1 },
+	{ NULL,		  "spnmtui",   NULL,		SPTAG(4),	           1,               -1 },
+	{ NULL,		  "spranger",   NULL,		SPTAG(5),	           1,               -1 },
+
 };
 
 /* layout(s) */
@@ -97,6 +157,7 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
 
+
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
@@ -136,7 +197,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_t,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_s,      setlayout,      {.v = &layouts[3]} },
-	{ MODKEY|ShiftMask,             XK_c,      setlayout,      {.v = &layouts[5]} },
+	{ MODKEY,                       XK_c,      setlayout,      {.v = &layouts[5]} },
 	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[11]} },
 	{ MODKEY|ShiftMask,             XK_f,      setlayout,      {.v = &layouts[13]} },
 	{ MODKEY,                       XK_semicolon,setlayout,      {0} },
@@ -147,6 +208,15 @@ static Key keys[] = {
 	{ MODKEY|ALTKEY,                XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+
+  // scratchpad
+ 	{ MODKEY|ShiftMask, 	  XK_Return, togglescratch,  {.ui = 0 } },
+	{ MODKEY,          	    XK_apostrophe, togglescratch,  {.ui = 1 } },
+	{ MODKEY|ShiftMask,    	XK_m,	     togglescratch,  {.ui = 2 } },
+  { MODKEY|ShiftMask,    	XK_c,	     togglescratch,  {.ui = 3 } },
+	{ MODKEY|ControlMask,   XK_n,	     togglescratch,  {.ui = 4 } },
+	{ MODKEY,               XK_e,	     togglescratch,  {.ui = 5 } },
+
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
@@ -170,7 +240,7 @@ static Button buttons[] = {
 	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
-	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
+	{ ClkClientWin,         MODKEY,         Button1,        resizemouse,    {0} },
 	{ ClkTagBar,            0,              Button1,        view,           {0} },
 	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
