@@ -1,18 +1,10 @@
---- dwm.c.orig
+--- dwm.c
 +++ dwm.c
-@@ -207,6 +207,7 @@ static void setup(void);
- static void showhide(Client *c);
- static void sigchld(int unused);
- static void spawn(const Arg *arg);
-+static void swapfocus();
- static void tag(const Arg *arg);
- static void tagmon(const Arg *arg);
- static void tile(Monitor *);
-@@ -236,6 +237,7 @@ static int xerrorstart(Display *dpy, XEr
- static void zoom(const Arg *arg);
- 
- /* variables */
-+static Client *prevclient = NULL;
- static const char broken[] = "broken";
- static char stext[256];
- static int screen;
+@@ -157,6 +157,7 @@ static void configure(Client *c);
+ static void configurenotify(XEvent *e);
+ static void configurerequest(XEvent *e);
+ static Monitor *createmon(void);
++static void cyclelayout(const Arg *arg);
+ static void destroynotify(XEvent *e);
+ static void detach(Client *c);
+ static void detachstack(Client *c);
