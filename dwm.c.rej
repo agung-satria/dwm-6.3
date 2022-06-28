@@ -1,11 +1,43 @@
---- dwm.c	2019-06-05 02:25:40.169986187 +0200
-+++ dwm.c	2019-06-05 10:48:42.443328992 +0200
-@@ -235,6 +235,8 @@ static int xerror(Display *dpy, XErrorEv
- static int xerrordummy(Display *dpy, XErrorEvent *ee);
- static int xerrorstart(Display *dpy, XErrorEvent *ee);
- static void zoom(const Arg *arg);
-+static void centeredmaster(Monitor *m);
-+static void centeredfloatingmaster(Monitor *m);
+--- dwm.c
++++ dwm.c
+@@ -1698,40 +1705,6 @@ tagmon(const Arg *arg)
+ 	sendmon(selmon->sel, dirtomon(arg->i));
+ }
  
- /* variables */
- static const char broken[] = "broken";
+-void
+-tile(Monitor *m)
+-{
+-	unsigned int i, n, h, mw, my, ty;
+-	float mfacts = 0, sfacts = 0;
+-	Client *c;
+-
+-	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) {
+-		if (n < m->nmaster)
+-			mfacts += c->cfact;
+-		else
+-			sfacts += c->cfact;
+-	}
+-	if (n == 0)
+-		return;
+-
+-	if (n > m->nmaster)
+-		mw = m->nmaster ? m->ww * m->mfact : 0;
+-	else
+-		mw = m->ww;
+-	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+-		if (i < m->nmaster) {
+-			h = (m->wh - my) * (c->cfact / mfacts);
+-			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
+-			my += HEIGHT(c);
+-			mfacts -= c->cfact;
+-		} else {
+-			h = (m->wh - ty) * (c->cfact / sfacts);
+-			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
+-			ty += HEIGHT(c);
+-			sfacts -= c->cfact;
+-		}
+-}
+-
+ void
+ togglebar(const Arg *arg)
+ {
