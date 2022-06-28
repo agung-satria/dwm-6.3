@@ -1,43 +1,66 @@
 --- dwm.c
 +++ dwm.c
-@@ -1698,40 +1705,6 @@ tagmon(const Arg *arg)
- 	sendmon(selmon->sel, dirtomon(arg->i));
+@@ -111,24 +111,32 @@ typedef struct {
+ 	void (*arrange)(Monitor *);
+ } Layout;
+ 
++#define MAXTABS 50
++
+ struct Monitor {
+ 	char ltsymbol[16];
+ 	float mfact;
+ 	int nmaster;
+ 	int num;
+ 	int by;               /* bar geometry */
++	int ty;               /* tab bar geometry */
+ 	int mx, my, mw, mh;   /* screen size */
+ 	int wx, wy, ww, wh;   /* window area  */
+ 	unsigned int seltags;
+ 	unsigned int sellt;
+ 	unsigned int tagset[2];
+ 	int showbar;
++	int showtab;
+ 	int topbar;
++	int toptab;
+ 	Client *clients;
+ 	Client *sel;
+ 	Client *stack;
+ 	Monitor *next;
+ 	Window barwin;
++	Window tabwin;
++	int ntabs;
++	int tab_widths[MAXTABS];
+ 	const Layout *lt[2];
+ };
+ 
+@@ -208,6 +217,7 @@ static void seturgent(Client *c, int urg);
+ static void showhide(Client *c);
+ static void sigchld(int unused);
+ static void spawn(const Arg *arg);
++static void tabmode(const Arg *arg);
+ static void tag(const Arg *arg);
+ static void tagmon(const Arg *arg);
+ static void tile(Monitor *);
+@@ -661,7 +693,10 @@ createmon(void)
+ 	m->mfact = mfact;
+ 	m->nmaster = nmaster;
+ 	m->showbar = showbar;
++	m->showtab = showtab;
+ 	m->topbar = topbar;
++	m->toptab = toptab;
++	m->ntabs = 0;
+ 	m->lt[0] = &layouts[0];
+ 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
+ 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+@@ -850,8 +935,10 @@ expose(XEvent *e)
+ 	Monitor *m;
+ 	XExposeEvent *ev = &e->xexpose;
+ 
+-	if (ev->count == 0 && (m = wintomon(ev->window)))
++	if(ev->count == 0 && (m = wintomon(ev->window))){
+ 		drawbar(m);
++		drawtab(m);
++	}
  }
  
--void
--tile(Monitor *m)
--{
--	unsigned int i, n, h, mw, my, ty;
--	float mfacts = 0, sfacts = 0;
--	Client *c;
--
--	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++) {
--		if (n < m->nmaster)
--			mfacts += c->cfact;
--		else
--			sfacts += c->cfact;
--	}
--	if (n == 0)
--		return;
--
--	if (n > m->nmaster)
--		mw = m->nmaster ? m->ww * m->mfact : 0;
--	else
--		mw = m->ww;
--	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
--		if (i < m->nmaster) {
--			h = (m->wh - my) * (c->cfact / mfacts);
--			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
--			my += HEIGHT(c);
--			mfacts -= c->cfact;
--		} else {
--			h = (m->wh - ty) * (c->cfact / sfacts);
--			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - (2*c->bw), h - (2*c->bw), 0);
--			ty += HEIGHT(c);
--			sfacts -= c->cfact;
--		}
--}
--
  void
- togglebar(const Arg *arg)
- {
