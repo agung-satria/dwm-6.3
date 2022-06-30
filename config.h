@@ -137,7 +137,6 @@ static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen win
 
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 #include "vanitygaps.c"
-#include "shiftview.c"
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
@@ -178,6 +177,9 @@ static const char *termcmd[]  = { "st", NULL };
 
 #include <X11/XF86keysym.h>
 #include "movestack.c"
+#include "shiftview.c"
+#include "nextprevtag.c"
+
 static Key keys[] = {
 	/* modifier                     key        function        argument */
   /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^agstr^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ */
@@ -242,7 +244,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
  	{ MODKEY|ShiftMask,             XK_l,      setcfact,       {.f = +0.25} },
 	{ MODKEY|ShiftMask,             XK_h,      setcfact,       {.f = -0.25} },
-	{ MODKEY|ShiftMask,             XK_o,      setcfact,       {.f =  0.00} },
+	{ MODKEY|ShiftMask,             XK_g,      setcfact,       {.f =  0.00} },
 
 	{ MODKEY,                       XK_space,  zoom,           {0} },
 	{ MODKEY,                       XK_x,      togglegaps,     {0} },
@@ -262,8 +264,11 @@ static Key keys[] = {
 	{ MODKEY|ALTKEY,                XK_9,      incrovgaps,     {.i = +3 } },
 	{ MODKEY|ALTKEY|ShiftMask,      XK_9,      incrovgaps,     {.i = -3 } },
 
+ 	{ MODKEY|ShiftMask,             XK_i,      view_adjacent,  { .i = -1 } },
+  { MODKEY|ShiftMask,             XK_o,      view_adjacent,  { .i = +1 } },
  	{ MODKEY,			                  XK_i,		   shiftview,	     { .i = -1 } },
 	{ MODKEY,			                  XK_o,	     shiftview,	     { .i = 1 } },
+
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY,                       XK_q,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
